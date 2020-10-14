@@ -1,8 +1,4 @@
-the read me file has:
-how to run the python scripts 
-explanation of the files in the repository 
-comments are used effectively 
-each function has a docstring 
+# Data Modeling with Postgres Project. 
 
 
 ## Files
@@ -60,6 +56,7 @@ insert into time table:
 INSERT INTO time (start_time, hour, day, week, month, year ,weekday)
 VALUES (%s, %s, %s, %s, %s, %s, %s)
 ```
+#### FIND songs:
 Here is the  SELECT query to to find the `song_id` and `artist_id` where `title` from song table, `name` from artist table, and `duration` from song table match input. 
 ```sql
 SELECT s.song_id, a.artist_id
@@ -113,7 +110,7 @@ this also starts by opening a JSON file and loading it into a `DataFrame` struct
 ```python
   df = pd.read_json(filepath, lines=True)
 ```
-For the time table data needs to be transformed in order to fit the table structure. first timestamp are extracted from the `DataFrame`. Then converted into a `datatime` type or  `dt` that has attributes that can help extract time infomation easily as can be seen in the line where the append is happening: 
+For the time table data needs to be transformed in order to fit the table structure. first timestamp are extracted from the `DataFrame`. Then converted into a `datatime` type or  `dt` that has attributes that can help extract time infomation easily as can be seen in the line where the append is happening ex: `i.week`: 
 ```python
     # filter by NextSong action
     df = df[(df.page == 'NextSong')]
@@ -134,13 +131,70 @@ For the time table data needs to be transformed in order to fit the table struct
         time_data.append([i, i.hour, i.day, i.week, i.month, i.year, i.dayofweek ])
     
     # insert time data records
-    time_data = []
-    for i in time_ToDateTime:
-        time_data.append([i, i.hour, i.day, i.week, i.month, i.year, i.dayofweek ])
     column_labels = ('timestamp', 'hour', 'day', 'week of year', 'month', 'year', 'weekday')
     time_df = pd.concat([pd.DataFrame([i], columns= column_labels) for i in time_data], ignore_index=True)
 ```
+Inserting time data into Database:
+```python
+    for i, row in time_df.iterrows():
+        try: 
+            cur.execute(time_table_insert, list(row))
+        except psycopg2.Error as e:
+            print("Error: Inserting Rows")
+            print (e)
+```
+Getting information form the `DataFrame` for the user table: 
 
+```python
+user_df = df[['userId', 'firstName', 'lastName', 'gender', 'level']]
+```
+Inserting users data into Database:
+```python
+    for i, row in user_df.iterrows():
+        cur.execute(user_table_insert, row)
+```
+Lastly for songplay table which requires a query as explained previously in the **FIND songs** section :
+```python
+    for index, row in df.iterrows():
+        
+        # get songid and artistid from song and artist tables
+        try:
+            cur.execute(song_select, (row.song, row.artist, row.length))
+        except psycopg2.Error as e:
+            print("Error: Selecting Rows")
+            print (e)
+        results = cur.fetchone()
+        
+        if results:
+            songid, artistid = results
+        else:
+            songid, artistid = None, None
+
+        # insert songplay record
+        songplay_data = [index ,row.ts ,row.userId, row.level, songid , artistid, row.sessionId, row.location, row.userAgent]
+        try:
+            cur.execute(songplay_table_insert, songplay_data)
+        except psycopg2.Error as e:
+            print("Error: Inserting Rows")
+            print (e)
+```
+
+These are output of queries after runing the ETL program. 
+```sql
+SELECT * FROM users LIMIT 5;
+```
+[image]
+```sql
+SELECT * FROM time LIMIT 5;
+```
+
+In order to find if the SELECT query has worked as intended I tested this query:
+
+```sql
+SELECT * FROM songplays WHERE song_id IS NOT NULL
+```
+Which returns one row just like explained in Rubrics of the project.
+[image]
 
 
 
