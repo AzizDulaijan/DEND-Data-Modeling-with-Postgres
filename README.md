@@ -5,7 +5,7 @@ This project is for a startup called Sparkify that has collected data they want 
 To run the python scripts, first start a new python command line and type:
 
 ```pytohn 
-run create_table.py
+run create_tables.py
 ```
 This would create the database and its tables.
 
