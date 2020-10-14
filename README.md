@@ -196,18 +196,20 @@ These are output of queries after runing the ETL program.
 ```sql
 SELECT * FROM users LIMIT 5;
 ```
-[image]
+![image info](Images/user_table.PNG)
 ```sql
 SELECT * FROM time LIMIT 5;
 ```
+![image info](Images/time_table.PNG)
 
 In order to find if the SELECT query has worked as intended I tested this query:
 
 ```sql
 SELECT * FROM songplays WHERE song_id IS NOT NULL
 ```
-Which returns one row just like explained in Rubrics of the project.
-![image info](Images/
+Which returns one row just like explained in Rubrics of the project:
+
+![image info](Images/NOT_none.PNG)
 
 
 
