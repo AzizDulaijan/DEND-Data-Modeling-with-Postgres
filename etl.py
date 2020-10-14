@@ -60,9 +60,6 @@ def process_log_file(cur, filepath):
         time_data.append([i, i.hour, i.day, i.week, i.month, i.year, i.dayofweek ])
     
     # insert time data records
-    time_data = []
-    for i in time_ToDateTime:
-        time_data.append([i, i.hour, i.day, i.week, i.month, i.year, i.dayofweek ])
     column_labels = ('timestamp', 'hour', 'day', 'week of year', 'month', 'year', 'weekday')
     time_df = pd.concat([pd.DataFrame([i], columns= column_labels) for i in time_data], ignore_index=True)
 
