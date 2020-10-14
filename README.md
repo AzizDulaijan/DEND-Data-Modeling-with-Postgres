@@ -1,5 +1,18 @@
 # Data Modeling with Postgres Project. 
+This project is for a startup called Sparkify that has collected data they want to analyze. the main focus of this analyses is to understand what their users are listening to. The task of this project is to create a database using Postgres in order to do queries and do analysis for song played by the users. The structure of the database uses a star schema which is good for doing queries and calculation analysis. An ETL pipeline is needed in order to go through the collected data and extract the data then put it in the database. 
 
+## Runing the Code
+To run the python scripts, first start a new python command line and type:
+
+```pytohn 
+run create_table.py
+```
+This would create the database and its tables.
+
+Then open a new python command line run the etl python file to extract data:
+```python
+run etl.py
+```
 
 ## Files
 ### sql_queries.py 
@@ -194,19 +207,9 @@ In order to find if the SELECT query has worked as intended I tested this query:
 SELECT * FROM songplays WHERE song_id IS NOT NULL
 ```
 Which returns one row just like explained in Rubrics of the project.
-[image]
+![image info](Images/
 
 
 
-
-to run the python scripts, first start a new command line luncher and type:
-
-'''pytohn 
-    run create_table.py
-'''
-this would create the database and its tables.
-then to popilate the tables with information from the data files , run the etl python file:
-    
-    ''' run etl.py'''
     
 
