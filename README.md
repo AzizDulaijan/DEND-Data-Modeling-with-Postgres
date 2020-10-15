@@ -3,7 +3,6 @@ This project is for a startup called Sparkify that has collected data they want 
 
 ## Runing the Code
 To run the python scripts, first start a new python command line and type:
-
 ```pytohn 
 run create_tables.py
 ```
@@ -16,53 +15,66 @@ run etl.py
 
 ## Files
 ### sql_queries.py 
-this file contains the a list of SQL queries to create tables, insert into tables, and drop tables. 
+this file contains the a list of SQL queries to create tables, insert into tables, and drop tables.data types where selected based on the data in provided by Sparkify.
+all values should be NOT NULL, but there are exeptions. Location data is not garanted from most devices, and could be change frequently.And, gender information which is not required in most sign-ups. 
 #### create tables : 
 create songplay table:
 ```sql
-CREATE TABLE IF NOT EXISTS songplays 
-(songplay_id VARCHAR, start_time NUMERIC, user_id VARCHAR, level VARCHAR, song_id VARCHAR, artist_id VARCHAR, session_id VARCHAR,  location VARCHAR, user_agent VARCHAR);
+    CREATE TABLE IF NOT EXISTS songplays 
+    (songplay_id SERIAL PRIMARY KEY, start_time NUMERIC NOT NULL, user_id VARCHAR NOT NULL, 
+    level VARCHAR NOT NULL, song_id VARCHAR, artist_id VARCHAR, session_id VARCHAR NOT NULL,  
+    location VARCHAR, user_agent VARCHAR NOT NULL);
 ```
 create the users table:
 ```sql
-CREATE TABLE IF NOT EXISTS users 
-(user_id VARCHAR, first_name VARCHAR, last_name VARCHAR, gender VARCHAR, level VARCHAR)
+    CREATE TABLE IF NOT EXISTS users 
+    (user_id VARCHAR PRIMARY KEY, first_name VARCHAR NOT NULL, last_name VARCHAR NOT NULL, 
+    gender VARCHAR, level VARCHAR NOT NULL)
 ```
 create the songs table:
 ```sql
-CREATE TABLE IF NOT EXISTS songs 
-(song_id VARCHAR, title VARCHAR, artist_id VARCHAR, year INT, duration NUMERIC)
+    CREATE TABLE IF NOT EXISTS songs 
+    (song_id VARCHAR PRIMARY KEY, title VARCHAR NOT NULL, artist_id VARCHAR NOT NULL, 
+    year INT, duration NUMERIC)
 ```
 create the artists table:
 ```sql
-CREATE TABLE IF NOT EXISTS artists 
-(artist_id VARCHAR, name VARCHAR, location VARCHAR, latitude NUMERIC, longitude NUMERIC)
+    CREATE TABLE IF NOT EXISTS artists 
+    (artist_id VARCHAR PRIMARY KEY, name VARCHAR NOT NULL, location VARCHAR, 
+    latitude NUMERIC, longitude NUMERIC)
 ```
 create the time table:
 ```sql
-CREATE TABLE IF NOT EXISTS time 
-(start_time DATE, hour INT, day INT, week INT, month INT, year INT ,weekday int)
+    CREATE TABLE IF NOT EXISTS time 
+    (start_time DATE NOT NULL, hour INT, day INT, 
+    week INT, month INT, year INT ,weekday int)
 ```
 #### insert data queries:
 insert into songplay table:
 ```sql
-INSERT INTO songplays (songplay_id, start_time, user_id, level, song_id, artist_id, session_id,  location, user_agent) 
-VALUES (%s, %s, %s, %s, %s, %s, %s,  %s, %s)
+    INSERT INTO songplays 
+    (start_time, user_id, level, song_id, artist_id, session_id,  location, user_agent) 
+    VALUES (%s, %s, %s, %s, %s, %s,  %s, %s)
 ```
 insert into users table:
 ```sql
-INSERT INTO users (user_id, first_name, last_name, gender, level)
-VALUES (%s, %s, %s, %s, %s)
+    INSERT INTO users (user_id, first_name, last_name, gender, level)
+    VALUES (%s, %s, %s, %s, %s)
+    ON CONFLICT (user_id) DO UPDATE SET level=EXCLUDED.level
 ```
 insert into songs table:
 ```sql
-INSERT INTO songs (song_id, title, artist_id, year, duration)
-VALUES (%s, %s, %s, %s, %s)
+    INSERT INTO songs (song_id, title, artist_id, year, duration)
+    VALUES (%s, %s, %s, %s, %s)
+    ON CONFLICT DO NOTHING
 ```
 insert into artists table:
 ```sql
-INSERT INTO artists (artist_id, name, location, latitude, longitude)
-VALUES (%s, %s, %s, %s, %s)
+    INSERT INTO artists (artist_id, name, location, latitude, longitude)
+    VALUES (%s, %s, %s, %s, %s)
+    ON CONFLICT (artist_id)
+        DO UPDATE 
+            SET location=EXCLUDED.location , latitude=EXCLUDED.latitude, longitude = EXCLUDED.longitude
 ```
 insert into time table:
 ```sql
@@ -184,7 +196,7 @@ Lastly for songplay table which requires a query as explained previously in the 
             songid, artistid = None, None
 
         # insert songplay record
-        songplay_data = [index ,row.ts ,row.userId, row.level, songid , artistid, row.sessionId, row.location, row.userAgent]
+        songplay_data = [row.ts ,row.userId, row.level, songid , artistid, row.sessionId, row.location, row.userAgent]
         try:
             cur.execute(songplay_table_insert, songplay_data)
         except psycopg2.Error as e:
