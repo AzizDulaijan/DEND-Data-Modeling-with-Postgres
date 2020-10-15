@@ -57,6 +57,7 @@ insert into songplay table:
     VALUES (%s, %s, %s, %s, %s, %s,  %s, %s)
 ```
 insert into users table:
+Note: when users "ON CONFLICT" clause insure that when a user change the level of the subscription there will not be duplicates 
 ```sql
     INSERT INTO users (user_id, first_name, last_name, gender, level)
     VALUES (%s, %s, %s, %s, %s)
@@ -69,6 +70,7 @@ insert into songs table:
     ON CONFLICT DO NOTHING
 ```
 insert into artists table:
+Note: when artists change location there shouldn't be duplicates. 
 ```sql
     INSERT INTO artists (artist_id, name, location, latitude, longitude)
     VALUES (%s, %s, %s, %s, %s)
